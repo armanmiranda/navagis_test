@@ -18,7 +18,6 @@ class App extends React.Component {
 
     loader.load().then((google) => {
       const cebu = new google.maps.LatLng(10.370314120057401, 123.82706631655005);
-      const infoWindow = new google.maps.InfoWindow();
       const map = new google.maps.Map(document.getElementById("map"), {
         center: cebu,
         zoom: 12,
@@ -26,14 +25,13 @@ class App extends React.Component {
 
       let request = {
         location: cebu,
-        radius: '500',
+        radius: '10000',
         type: ['restaurant']
       };
 
       this.setState({
         map: map,
         google: google,
-        infoWindow: infoWindow
       });
 
       const service = new google.maps.places.PlacesService(map);
@@ -52,16 +50,23 @@ class App extends React.Component {
   }
 
   createMarker(place) {
-    const { map, google, infoWindow } = this.state;
+    const { map, google } = this.state;
+    const infowindow = new google.maps.InfoWindow();
 
     if (!place.geometry || !place.geometry.location) return;
     const marker = new google.maps.Marker({
       map,
       position: place.geometry.location,
+      title: place.name
+    });
+
+    infowindow.open({
+      achor: marker,
+      map
     });
     google.maps.event.addListener(marker, "click", () => {
-      infoWindow.setContent(place.name || "");
-      infoWindow.open(map);
+      infowindow.setContent(place.name || "");
+      infowindow.open(map);
     });
   }
 
